@@ -33,7 +33,6 @@ def pollForUpdates():
 				updateMessage = ""
 			result = check_output(["git", "pull"])
 		allLogs = check_output(["git", "log", "--oneline"]).split('\n')
-		print(allLogs)
 		i = 0
 		while i < len(allLogs) and allLogs[i][:7] != recentCommit:
 			print(allLogs[i][8:])
