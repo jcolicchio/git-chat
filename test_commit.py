@@ -8,11 +8,15 @@ import threading
 updateMessage = ""
 recentCommit = ""
 
+def gitPull():
+	check_output(["git", "pull"])
+
 def mostRecentCommitHash():
 	return check_output(["git", "log", "-1", "--oneline"])[:7]
 
 def sendMessage(msg):
 	global recentCommit
+	gitPull()
 	check_output(["git", "commit", "-m", msg, "--allow-empty"])
 	recentCommit = mostRecentCommitHash()
 	check_output(["git", "push"])
