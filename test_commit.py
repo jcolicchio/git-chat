@@ -17,7 +17,7 @@ def gitPull():
 
 def logArray():
 	with open(os.devnull, 'w') as devnull:
-		result = check_output(["git", "log", "--oneline"], stderr=devnull).split('\n')
+		result = check_output(["git", "log", "--pretty=format:%h %an: %s"], stderr=devnull).split('\n')
 	return result
 
 def mostRecentCommitHash():
@@ -63,4 +63,3 @@ t.start()
 
 while True:
 	updateMessage = raw_input()
-
