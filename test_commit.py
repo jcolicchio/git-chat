@@ -62,4 +62,4 @@ t = threading.Thread(target=pollForUpdates, args=())
 t.start()
 
 while True:
-	updateMessage = raw_input("> ")
+	updateMessage = raw_input()
