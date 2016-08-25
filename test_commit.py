@@ -40,6 +40,11 @@ def sendMessage(msg):
 	recentCommit = mostRecentCommitHash()
 	gitPush()
 
+def getHistory(num):
+        with open(os.devnull, 'w') as devnull:
+            result = check_output(["git", "log", "--reverse","--pretty=format:%an: %s", "-"+str(num)], stderr=devnull)
+        return result;
+
 def pollForUpdates():
 	global updateMessage
 	global recentCommit
@@ -58,6 +63,7 @@ def pollForUpdates():
 			i += 1
 		recentCommit = allLogs[0][:7]
 
+print getHistory(5)
 t = threading.Thread(target=pollForUpdates, args=())
 t.start()
 
