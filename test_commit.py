@@ -3,36 +3,55 @@
 from subprocess import call
 from subprocess import check_output
 import threading
+import subprocess
+import os
 
 # get the most recent commit
 updateMessage = ""
 recentCommit = ""
 
 def gitPull():
-	check_output(["git", "pull"])
+	with open(os.devnull, 'w') as devnull:
+		result = check_output(["git", "pull"], stderr=devnull)
+	return result
+
+def logArray():
+	with open(os.devnull, 'w') as devnull:
+		result = check_output(["git", "log", "--oneline"], stderr=devnull).split('\n')
+	return result
 
 def mostRecentCommitHash():
-	return check_output(["git", "log", "-1", "--oneline"])[:7]
+	with open(os.devnull, 'w') as devnull:
+		result = check_output(["git", "log", "-1", "--oneline"], stderr=devnull)[:7]
+	return result
+
+def gitPush():
+	with open(os.devnull, 'w') as devnull:
+		check_output(["git", "push"], stderr=devnull)
+
+def gitCommitMessage(msg):
+	with open(os.devnull, 'w') as devnull:
+		check_output(["git", "commit", "-m", msg, "--allow-empty"], stderr=devnull)
 
 def sendMessage(msg):
 	global recentCommit
 	gitPull()
-	check_output(["git", "commit", "-m", msg, "--allow-empty"])
+	gitCommitMessage(msg)
 	recentCommit = mostRecentCommitHash()
-	check_output(["git", "push"])
+	gitPush()
 
 def pollForUpdates():
 	global updateMessage
 	global recentCommit
-	recentCommit = check_output(["git", "log", "--oneline"]).split('\n')[0][:7]
+	recentCommit = mostRecentCommitHash()
 	while True:
-		result = check_output(["git", "pull"])
+		result = gitPull()
 		while(result.find("Already up-to-date.") != -1):
 			if len(updateMessage) > 0:
 				sendMessage(updateMessage)
 				updateMessage = ""
-			result = check_output(["git", "pull"])
-		allLogs = check_output(["git", "log", "--oneline"]).split('\n')
+			result = gitPull()
+		allLogs = logArray()
 		i = 0
 		while i < len(allLogs) and allLogs[i][:7] != recentCommit:
 			print(allLogs[i][8:])
